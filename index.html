@@ -1,0 +1,888 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Noto+Serif+JP:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1025;--paper:#fdf6f0;--sakura:#e8a0bf;--sakura-light:#fde8f3;--sakura-dark:#c2185b;
+  --indigo:#2d1b69;--indigo-mid:#4a2fa0;--indigo-light:#ede8ff;
+  --gold:#f5a623;--gold-light:#fff8e1;--gold-dark:#b7710a;
+  --teal:#0d7377;--teal-light:#e0f7fa;
+  --red:#c62828;--red-light:#ffebee;
+  --green:#2e7d32;--green-light:#e8f5e9;
+  --border:#d4c5e2;--muted:#7b6b8a;--card:#fff9fc;
+  --manga-border:3px solid #1a1025;
+}
+body{font-family:'Nunito',sans-serif;background:var(--paper);color:var(--ink)}
+
+/* MANGA PANEL STYLE */
+.manga-panel{border:var(--manga-border);border-radius:0;background:var(--card);position:relative}
+.manga-panel::before{content:'';position:absolute;top:3px;left:3px;right:-3px;bottom:-3px;background:#1a1025;z-index:-1;border-radius:0}
+
+/* HEADER */
+.game-wrap{max-width:700px;margin:0 auto;padding:12px}
+.header{text-align:center;padding:16px 0 8px;border-bottom:3px solid var(--ink);margin-bottom:12px}
+.header-title{font-family:'Noto Serif JP',serif;font-size:26px;font-weight:700;color:var(--indigo);letter-spacing:2px}
+.header-jp{font-size:13px;color:var(--muted);letter-spacing:3px;margin-top:2px}
+.star-bar{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0}
+.star-bar .stars{font-size:18px;letter-spacing:2px}
+.star-bar .count{font-size:12px;font-weight:800;color:var(--gold-dark);background:var(--gold-light);padding:2px 10px;border:2px solid var(--gold)}
+
+/* NAV TABS - manga chapter style */
+.chapter-nav{display:flex;gap:0;margin-bottom:12px;overflow-x:auto;border:var(--manga-border)}
+.chapter-tab{flex-shrink:0;padding:8px 12px;border-right:2px solid var(--ink);background:var(--paper);font-size:11px;font-weight:800;cursor:pointer;transition:all 0.15s;color:var(--muted);white-space:nowrap;border-bottom:none;font-family:'Nunito',sans-serif;text-transform:uppercase;letter-spacing:0.5px}
+.chapter-tab:last-child{border-right:none}
+.chapter-tab.active{background:var(--indigo);color:white}
+.chapter-tab.done{background:var(--green-light);color:var(--green)}
+.chapter-tab:hover:not(.active){background:var(--indigo-light);color:var(--indigo)}
+
+/* SCREEN */
+.screen{display:none}.screen.active{display:block}
+
+/* MAP */
+.map-hero{text-align:center;padding:20px;border-bottom:3px solid var(--ink)}
+.hero-char{font-size:72px;display:block}
+.hero-name{font-family:'Noto Serif JP',serif;font-size:18px;color:var(--indigo);margin-top:4px}
+.hero-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.missions-list{padding:12px}
+.mission-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:2px solid var(--border);cursor:pointer;transition:background 0.15s;position:relative}
+.mission-row:last-child{border-bottom:none}
+.mission-row:hover:not(.locked){background:var(--indigo-light)}
+.mission-row.locked{opacity:0.45;cursor:not-allowed}
+.mission-row.done{background:var(--green-light)}
+.mission-row .m-num{font-size:22px;font-weight:900;color:var(--indigo);min-width:32px;font-family:'Noto Serif JP',serif}
+.mission-row .m-info{flex:1}
+.mission-row .m-title{font-size:14px;font-weight:800;color:var(--ink)}
+.mission-row .m-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.mission-row .m-status{font-size:20px}
+.mission-row .m-icon{font-size:28px}
+
+/* SECTION PANELS */
+.section-header{background:var(--indigo);color:white;padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:3px solid var(--ink)}
+.section-header .s-icon{font-size:30px}
+.section-header h2{font-size:16px;font-weight:800;font-family:'Noto Serif JP',serif}
+.section-header .s-sub{font-size:11px;opacity:0.8;margin-top:2px;letter-spacing:1px}
+.section-body{padding:16px}
+
+/* MANGA SPEECH BUBBLES */
+.bubble{position:relative;background:white;border:var(--manga-border);border-radius:16px 16px 16px 4px;padding:12px 14px;margin:10px 0;display:flex;gap:10px;align-items:flex-start}
+.bubble::after{content:'';position:absolute;bottom:-14px;left:20px;border:7px solid transparent;border-top-color:#1a1025}
+.bubble::before{content:'';position:absolute;bottom:-10px;left:22px;border:5px solid transparent;border-top-color:white;z-index:1}
+.bubble.right{border-radius:16px 16px 4px 16px}
+.bubble.right::after{left:auto;right:20px}
+.bubble.right::before{left:auto;right:22px}
+.bubble .b-avatar{font-size:32px;flex-shrink:0;line-height:1}
+.bubble .b-text{font-size:13px;line-height:1.65;color:var(--ink)}
+.bubble .b-name{font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.bubble-wrap{margin-bottom:20px}
+
+/* CONTENT BOXES - manga style */
+.content-box{border:var(--manga-border);padding:14px;margin:12px 0;background:white;position:relative}
+.content-box .cb-tag{position:absolute;top:-12px;left:12px;background:var(--indigo);color:white;font-size:10px;font-weight:800;padding:2px 10px;text-transform:uppercase;letter-spacing:1px}
+.content-box.gold{border-color:var(--gold);background:var(--gold-light)}
+.content-box.gold .cb-tag{background:var(--gold-dark)}
+.content-box.sakura{border-color:var(--sakura-dark);background:var(--sakura-light)}
+.content-box.sakura .cb-tag{background:var(--sakura-dark)}
+.content-box.teal{border-color:var(--teal);background:var(--teal-light)}
+.content-box.teal .cb-tag{background:var(--teal)}
+.content-box h3{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:8px}
+.content-box p,.content-box li{font-size:13px;line-height:1.7;color:var(--ink)}
+.content-box ul{padding-left:16px}
+.formula-box{background:var(--indigo);color:white;text-align:center;padding:12px 16px;font-size:20px;font-weight:900;margin:10px 0;letter-spacing:1px;border:3px solid var(--ink)}
+
+/* INTERACTIVE DEMO */
+.demo-panel{border:var(--manga-border);background:#f8f4ff;padding:14px;margin:12px 0}
+.demo-panel .d-tag{font-size:10px;font-weight:800;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;border-bottom:2px solid var(--teal);padding-bottom:4px}
+.demo-panel p{font-size:12px;color:var(--muted);margin-bottom:10px}
+
+/* EXAMPLES GRID */
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.ex-card{background:white;border:2px solid var(--border);padding:10px;text-align:center}
+.ex-card .ec-icon{font-size:26px}
+.ex-card .ec-label{font-size:11px;font-weight:800;color:var(--indigo);margin-top:4px}
+.ex-card .ec-type{font-size:10px;color:var(--muted);margin-top:2px;padding:1px 6px;border:1px solid var(--border);display:inline-block}
+.ex-card.det{border-color:#90a4ae;background:#f5f9fc}
+.ex-card.ale{border-color:var(--sakura-dark);background:var(--sakura-light)}
+
+/* SCALE */
+.prob-scale{display:flex;margin:10px 0;border:var(--manga-border);overflow:hidden}
+.ps-seg{flex:1;padding:8px 4px;text-align:center;font-size:11px;font-weight:800;border-right:2px solid var(--ink)}
+.ps-seg:last-child{border-right:none}
+.ps-seg.p0{background:#ffebee;color:var(--red)}
+.ps-seg.p1{background:#fff8e1;color:var(--gold-dark)}
+.ps-seg.p2{background:#e8f5e9;color:var(--green)}
+
+/* SM ITEMS */
+.sm-wrap{background:#e8f0fe;border:2px solid #3f51b5;padding:10px 12px;margin:8px 0}
+.sm-wrap .sm-label{font-size:10px;font-weight:800;color:#283593;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.sm-items{display:flex;flex-wrap:wrap;gap:6px}
+.sm-item{background:white;border:2px solid #3f51b5;padding:3px 10px;font-size:12px;font-weight:800;color:#283593}
+.sm-item.fav{background:#e8f5e9;border-color:var(--green);color:var(--green)}
+
+/* DIE */
+.die-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:8px 0}
+.die-face{background:white;border:2px solid var(--ink);padding:7px 4px;text-align:center;font-size:20px;font-weight:900;cursor:pointer;transition:all 0.15s;font-family:'Noto Serif JP',serif}
+.die-face:hover{background:var(--indigo-light);border-color:var(--indigo)}
+.die-face.fav{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.die-face.rolling{background:var(--gold-light);border-color:var(--gold-dark)}
+
+/* TREE */
+.tree-tbl{border-collapse:collapse;width:100%;font-size:12px}
+.tree-tbl td{padding:5px 8px;border:2px solid var(--ink);text-align:center}
+.tree-tbl .hdr td{background:var(--indigo);color:white;font-weight:800}
+.tree-tbl .fav td{background:var(--green-light);color:var(--green)}
+
+/* SLIDERS */
+.slider-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.slider-row label{font-size:12px;color:var(--muted);min-width:90px;font-weight:700}
+.slider-row input{flex:1}
+.slider-row span{font-size:13px;font-weight:800;min-width:24px;text-align:right;color:var(--ink)}
+.bolita-grid{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.bolita{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:3px solid rgba(0,0,0,0.25);cursor:pointer;transition:all 0.15s;color:white}
+.bolita:hover{transform:scale(1.12);border-width:3px}
+.prob-bar{background:#ddd;height:22px;margin:8px 0;position:relative;border:2px solid var(--ink)}
+.prob-fill{height:100%;background:var(--teal);display:flex;align-items:center;justify-content:flex-end;padding-right:6px;transition:width 0.4s}
+.prob-fill span{font-size:11px;font-weight:800;color:white}
+
+/* COMPARE */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.compare-grid select{width:100%;padding:7px;border:2px solid var(--ink);font-size:12px;font-family:'Nunito',sans-serif;font-weight:700;background:white;color:var(--ink)}
+.compare-result{border:3px solid var(--ink);padding:12px;text-align:center;margin-top:12px;font-size:14px;font-weight:800}
+.compare-result.a-wins{background:var(--sakura-light);color:var(--sakura-dark)}
+.compare-result.b-wins{background:var(--indigo-light);color:var(--indigo)}
+.compare-result.tie{background:var(--gold-light);color:var(--gold-dark)}
+
+/* QUIZ */
+.quiz-header{background:var(--red);color:white;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--ink)}
+.quiz-header h3{font-size:14px;font-weight:800;font-family:'Noto Serif JP',serif}
+.quiz-body{padding:16px}
+.quiz-q{font-size:14px;font-weight:800;line-height:1.5;margin-bottom:10px;color:var(--ink)}
+.quiz-ctx{background:#f5f5f5;border-left:4px solid var(--indigo);padding:10px 12px;font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6}
+.opts{display:grid;gap:7px}
+.opt{width:100%;padding:11px 14px;border:2px solid var(--ink);background:white;font-size:13px;font-weight:700;cursor:pointer;text-align:left;transition:all 0.15s;color:var(--ink);font-family:'Nunito',sans-serif}
+.opt:hover:not(:disabled){background:var(--indigo-light);border-color:var(--indigo)}
+.opt.correct{background:var(--green-light);border-color:var(--green);color:var(--green)}
+.opt.wrong{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.feedback{border:3px solid var(--ink);padding:12px;margin-top:12px;display:none;gap:10px}
+.feedback.show{display:flex}
+.feedback.ok{background:var(--green-light)}
+.feedback.nok{background:var(--red-light)}
+.feedback .fb-ico{font-size:26px;flex-shrink:0}
+.feedback .fb-txt{font-size:12px;line-height:1.6}
+.feedback .fb-txt strong{display:block;font-size:13px;margin-bottom:3px}
+.next-btn{margin-top:10px;width:100%;padding:12px;background:var(--indigo);color:white;border:3px solid var(--ink);font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;display:none}
+.next-btn.show{display:block}
+.next-btn:hover{background:var(--indigo-mid)}
+
+/* BIG BUTTONS */
+.go-btn{display:block;width:100%;padding:13px;margin-top:14px;border:3px solid var(--ink);font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.15s;text-align:center}
+.go-btn.red{background:var(--red);color:white}
+.go-btn.red:hover{background:var(--red-light);color:var(--red)}
+.go-btn.indigo{background:var(--indigo);color:white}
+.go-btn.indigo:hover{background:var(--indigo-light);color:var(--indigo)}
+.go-btn.green{background:var(--green);color:white}
+.go-btn.green:hover{background:var(--green-light);color:var(--green)}
+.go-btn.sakura{background:var(--sakura-dark);color:white}
+
+/* RESULT */
+.result-panel{text-align:center;padding:24px 16px}
+.result-panel .r-icon{font-size:60px;margin-bottom:8px;display:block}
+.result-panel h2{font-size:20px;font-weight:800;font-family:'Noto Serif JP',serif;color:var(--indigo);margin-bottom:6px}
+.result-panel .r-score{font-size:38px;font-weight:900;color:var(--gold-dark)}
+.result-panel .r-stars{font-size:28px;margin:8px 0;letter-spacing:4px}
+.result-panel .r-msg{font-size:13px;color:var(--muted);line-height:1.6;margin:8px 0 18px}
+.result-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border:2px solid var(--ink);font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif}
+.result-btns .btn-p{background:var(--indigo);color:white}
+.result-btns .btn-s{background:white;color:var(--indigo)}
+
+/* MATERIA TABS */
+.materia-nav{display:flex;gap:0;border:var(--manga-border);margin-bottom:12px;overflow-x:auto}
+.mat-tab{flex-shrink:0;padding:7px 12px;border-right:2px solid var(--ink);background:white;font-size:11px;font-weight:800;cursor:pointer;color:var(--muted);white-space:nowrap;font-family:'Nunito',sans-serif;text-transform:uppercase}
+.mat-tab:last-child{border-right:none}
+.mat-tab.active{background:var(--sakura-dark);color:white}
+.mat-content{display:none}.mat-content.active{display:block}
+
+/* SEPARADOR */
+.sep{border:none;border-top:2px solid var(--border);margin:14px 0}
+
+/* ACCORDION MATERIA */
+.acc-btn{width:100%;padding:11px 14px;border:2px solid var(--ink);background:var(--indigo-light);font-size:13px;font-weight:800;cursor:pointer;text-align:left;font-family:'Nunito',sans-serif;color:var(--indigo);display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.acc-btn:hover{background:var(--indigo);color:white}
+.acc-content{border:2px solid var(--ink);border-top:none;padding:14px;background:white;display:none;font-size:13px;line-height:1.7}
+.acc-content.open{display:block}
+.acc-content h4{font-size:13px;font-weight:800;color:var(--indigo);margin:10px 0 4px}
+.acc-content h4:first-child{margin-top:0}
+.acc-content p{margin-bottom:8px;color:var(--ink)}
+.acc-content ul{padding-left:16px;margin-bottom:8px}
+.acc-content li{margin-bottom:3px;color:var(--ink)}
+.acc-content .mini-formula{background:var(--indigo);color:white;text-align:center;padding:8px;font-size:15px;font-weight:900;margin:8px 0}
+.acc-content table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0}
+.acc-content table td,.acc-content table th{border:1.5px solid var(--border);padding:5px 8px;text-align:center}
+.acc-content table th{background:var(--indigo);color:white;font-weight:700}
+.acc-content table tr:nth-child(even) td{background:#f9f6ff}
+.highlight-box{background:var(--gold-light);border-left:4px solid var(--gold-dark);padding:8px 12px;margin:8px 0;font-size:12px}
+.highlight-box strong{color:var(--gold-dark)}
+</style>
+
+<div class="game-wrap">
+
+<div class="header">
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px">
+    <span style="font-size:36px">⛩️</span>
+    <div>
+      <div class="header-title">確率の道場</div>
+      <div class="header-jp">DOJO DE LA PROBABILIDAD</div>
+    </div>
+    <span style="font-size:36px">🌸</span>
+  </div>
+  <div class="star-bar" style="margin-top:10px">
+    <span class="stars" id="starDisplay">☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆</span>
+    <span class="count" id="starCount">0 / 15 ⭐</span>
+  </div>
+</div>
+
+<div class="chapter-nav" id="chapNav">
+  <button class="chapter-tab active" onclick="goTab(0)">⛩️ Mapa</button>
+  <button class="chapter-tab" onclick="goTab(1)" id="ctab1">📖 Materia</button>
+  <button class="chapter-tab" onclick="goTab(2)" id="ctab2">M1: Experimentos</button>
+  <button class="chapter-tab" onclick="goTab(3)" id="ctab3">M2: Espacio muestral</button>
+  <button class="chapter-tab" onclick="goTab(4)" id="ctab4">M3: Árbol y tabla</button>
+  <button class="chapter-tab" onclick="goTab(5)" id="ctab5">M4: Probabilidad</button>
+  <button class="chapter-tab" onclick="goTab(6)" id="ctab6">M5: Comparar</button>
+</div>
+
+<!-- ===== SCREEN 0: MAPA ===== -->
+<div class="screen active" id="s0">
+<div class="manga-panel">
+  <div class="map-hero">
+    <span class="hero-char">🧝‍♀️</span>
+    <div class="hero-name">Josefina — Aprendiz del Dojo</div>
+    <div class="hero-sub">Completa las 5 misiones para convertirte en Maestra Ninja ⭐</div>
+  </div>
+  <div style="padding:10px 14px;background:var(--sakura-light);border-bottom:2px solid var(--border);font-size:12px;color:var(--sakura-dark);font-weight:700;text-align:center">
+    🌸 Tip: Visita el <strong>📖 Cuaderno de Materia</strong> antes de cada misión para repasar todo el contenido
+  </div>
+  <div class="missions-list">
+    <div class="mission-row" onclick="goTab(2)">
+      <span class="m-icon">🎲</span>
+      <div class="m-info"><div class="m-title">Misión 1 — Experimentos</div><div class="m-sub">Determinístico vs aleatorio</div></div>
+      <span class="m-status" id="ms1">▶</span>
+    </div>
+    <div class="mission-row locked" id="mr2" onclick="startM(3)">
+      <span class="m-icon">🌀</span>
+      <div class="m-info"><div class="m-title">Misión 2 — Espacio muestral</div><div class="m-sub">Todos los resultados posibles</div></div>
+      <span class="m-status" id="ms2">🔒</span>
+    </div>
+    <div class="mission-row locked" id="mr3" onclick="startM(4)">
+      <span class="m-icon">🌳</span>
+      <div class="m-info"><div class="m-title">Misión 3 — Árbol y tabla</div><div class="m-sub">Organizar posibilidades</div></div>
+      <span class="m-status" id="ms3">🔒</span>
+    </div>
+    <div class="mission-row locked" id="mr4" onclick="startM(5)">
+      <span class="m-icon">⚖️</span>
+      <div class="m-info"><div class="m-title">Misión 4 — Probabilidad</div><div class="m-sub">Calcular P = favorables / totales</div></div>
+      <span class="m-status" id="ms4">🔒</span>
+    </div>
+    <div class="mission-row locked" id="mr5" onclick="startM(6)">
+      <span class="m-icon">🏆</span>
+      <div class="m-info"><div class="m-title">Misión Final — Comparar</div><div class="m-sub">¿Cuál evento es más probable?</div></div>
+      <span class="m-status" id="ms5">🔒</span>
+    </div>
+  </div>
+  <div id="finalMsg" style="display:none;padding:14px;background:var(--gold-light);border-top:3px solid var(--gold-dark);text-align:center;font-weight:800;color:var(--gold-dark);font-size:14px">
+    🏆 ¡MAESTRA NINJA DE LA PROBABILIDAD! ¡Lo lograste! 🌸
+  </div>
+</div>
+</div>
+
+<!-- ===== SCREEN 1: CUADERNO DE MATERIA ===== -->
+<div class="screen" id="s1">
+<div class="manga-panel">
+  <div class="section-header">
+    <div class="s-icon">📖</div>
+    <div><h2>Cuaderno del Dojo</h2><div class="s-sub">REPASA TODA LA MATERIA AQUÍ</div></div>
+  </div>
+  <div class="section-body">
+
+    <div class="bubble-wrap">
+      <div class="bubble">
+        <div><div class="b-name">Kitsune sensei 🦊</div>
+        <div class="b-text">Aquí está todo lo que necesitas saber para la prueba. Haz clic en cada tema para leer la explicación completa. ¡Estudia con calma, ninja!</div></div>
+      </div>
+    </div>
+
+    <button class="acc-btn" onclick="toggleAcc('a1')">🎲 Experimentos: determinístico y aleatorio <span id="arr-a1">▼</span></button>
+    <div class="acc-content" id="a1">
+      <h4>¿Qué es un experimento?</h4>
+      <p>En probabilidad, un <strong>experimento</strong> es cualquier acción que realizas para observar un resultado. Puede ser tirar un dado, lanzar una moneda o sacar una bolita.</p>
+      <h4>Experimento determinístico</h4>
+      <p>Es aquel donde ya sabes <strong>exactamente</strong> qué va a pasar antes de hacerlo. El resultado siempre es el mismo, no hay sorpresa.</p>
+      <ul>
+        <li>Encender una linterna que funciona → siempre se prende</li>
+        <li>Calcular 2 + 2 → siempre da 4</li>
+        <li>Soltar una pelota → siempre cae</li>
+        <li>Hervir agua a 100°C → siempre hierve</li>
+      </ul>
+      <h4>Experimento aleatorio</h4>
+      <p>Es aquel donde el resultado es <strong>incierto</strong>. Pueden ocurrir varias cosas distintas y no sabes cuál saldrá.</p>
+      <ul>
+        <li>Lanzar una moneda → puede salir cara o sello</li>
+        <li>Tirar un dado → puede salir 1, 2, 3, 4, 5 o 6</li>
+        <li>Sacar una carta → no sabes qué carta</li>
+        <li>Sacar una bolita de una bolsa → no sabes qué color</li>
+      </ul>
+      <div class="highlight-box"><strong>Truco ninja:</strong> Pregúntate: «¿Antes de hacerlo, ya sé exactamente qué va a pasar?» SÍ = determinístico. NO = aleatorio.</div>
+    </div>
+
+    <button class="acc-btn" onclick="toggleAcc('a2')">🌀 Espacio muestral y tipos de sucesos <span id="arr-a2">▼</span></button>
+    <div class="acc-content" id="a2">
+      <h4>¿Qué es el espacio muestral?</h4>
+      <p>Es la lista de <strong>todos los resultados posibles</strong> de un experimento. Todo lo que podría pasar antes de hacerlo.</p>
+      <table>
+        <tr><th>Experimento</th><th>Espacio muestral</th><th>Total</th></tr>
+        <tr><td>Lanzar una moneda</td><td>{cara, sello}</td><td>2</td></tr>
+        <tr><td>Tirar un dado</td><td>{1, 2, 3, 4, 5, 6}</td><td>6</td></tr>
+        <tr><td>Bolsa roja/azul/verde</td><td>{roja, azul, verde}</td><td>3</td></tr>
+      </table>
+      <div class="highlight-box"><strong>¡Ojo!</strong> Si tiras un dado y sale 4, ese 4 es el resultado. El espacio muestral sigue siendo {1,2,3,4,5,6} porque eso era todo lo que podía pasar.</div>
+      <h4>Tipos de sucesos</h4>
+      <ul>
+        <li><strong>Suceso seguro (P = 1):</strong> siempre ocurre. Ej: sacar un número del 1 al 6 en un dado.</li>
+        <li><strong>Suceso posible (0 &lt; P &lt; 1):</strong> puede ocurrir, pero no siempre. Ej: sacar número par.</li>
+        <li><strong>Suceso imposible (P = 0):</strong> nunca puede ocurrir. Ej: sacar un 7 en un dado de 6 caras.</li>
+      </ul>
+    </div>
+
+    <button class="acc-btn" onclick="toggleAcc('a3')">🌳 Diagrama de árbol y tabla de doble entrada <span id="arr-a3">▼</span></button>
+    <div class="acc-content" id="a3">
+      <h4>¿Para qué sirven?</h4>
+      <p>Cuando un experimento tiene <strong>más de un paso</strong>, usamos estas herramientas para no olvidar ninguna combinación posible.</p>
+      <h4>Diagrama de árbol</h4>
+      <p>Muestra los resultados <strong>paso a paso</strong>, como ramas que se van dividiendo.</p>
+      <p><strong>Ejemplo: lanzar moneda y dado</strong></p>
+      <ul>
+        <li>Moneda: cara o sello (2 opciones)</li>
+        <li>Dado: 1, 2, 3, 4, 5, 6 (6 opciones)</li>
+        <li>Total: 2 × 6 = <strong>12 combinaciones</strong></li>
+      </ul>
+      <div class="mini-formula">Total = opciones A × opciones B</div>
+      <h4>Tabla de doble entrada</h4>
+      <p>Cruza dos grupos: uno en las filas y otro en las columnas. Cada casilla es una combinación.</p>
+      <table>
+        <tr><th>D1 \ D2</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr>
+        <tr><th>1</th><td>1-1</td><td>1-2</td><td>1-3</td><td>1-4</td><td>1-5</td><td>1-6</td></tr>
+        <tr><th>2</th><td>2-1</td><td>2-2</td><td>2-3</td><td>2-4</td><td>2-5</td><td>2-6</td></tr>
+        <tr><th colspan="7" style="color:var(--muted);font-size:11px;background:white">... hasta 6×6 = 36 combinaciones totales</th></tr>
+      </table>
+      <div class="highlight-box"><strong>Árbol vs Tabla:</strong> Las dos sirven para lo mismo. El árbol muestra pasos; la tabla cruza dos grupos. Usa la que te resulte más cómoda.</div>
+    </div>
+
+    <button class="acc-btn" onclick="toggleAcc('a4')">⚖️ Probabilidad de ocurrencia <span id="arr-a4">▼</span></button>
+    <div class="acc-content" id="a4">
+      <h4>¿Qué es la probabilidad?</h4>
+      <p>Es una medida que nos dice <strong>qué tan posible</strong> es que ocurra un suceso. Va de 0 (imposible) a 1 (seguro).</p>
+      <div class="mini-formula">P = casos favorables ÷ casos totales</div>
+      <ul>
+        <li><strong>Casos favorables:</strong> los resultados que me interesan (que cumplen lo que pide el problema)</li>
+        <li><strong>Casos totales:</strong> TODOS los resultados posibles del espacio muestral</li>
+      </ul>
+      <h4>Pasos para resolver cualquier ejercicio</h4>
+      <ul>
+        <li>Paso 1: escribe todos los resultados posibles (espacio muestral)</li>
+        <li>Paso 2: marca los que cumplen lo que pide el ejercicio</li>
+        <li>Paso 3: cuenta los favorables</li>
+        <li>Paso 4: divide: favorables ÷ totales</li>
+      </ul>
+      <h4>Ejemplos resueltos</h4>
+      <table>
+        <tr><th>Pregunta</th><th>Favorables</th><th>Totales</th><th>P</th></tr>
+        <tr><td>Dado: sacar 3</td><td>1</td><td>6</td><td>1/6</td></tr>
+        <tr><td>Dado: número par</td><td>3 (2,4,6)</td><td>6</td><td>3/6 = 1/2</td></tr>
+        <tr><td>Dado: mayor que 4</td><td>2 (5,6)</td><td>6</td><td>2/6 = 1/3</td></tr>
+        <tr><td>Bolsa: 4 rojas de 10</td><td>4</td><td>10</td><td>4/10 = 2/5</td></tr>
+        <tr><td>Dado: sacar 7</td><td>0</td><td>6</td><td>0/6 = 0</td></tr>
+        <tr><td>Dado: del 1 al 6</td><td>6</td><td>6</td><td>6/6 = 1</td></tr>
+      </table>
+    </div>
+
+    <button class="acc-btn" onclick="toggleAcc('a5')">🏆 Comparar probabilidades de dos eventos <span id="arr-a5">▼</span></button>
+    <div class="acc-content" id="a5">
+      <h4>¿Cómo se comparan dos probabilidades?</h4>
+      <p>Calculas la probabilidad de cada evento y comparas las fracciones.</p>
+      <div class="mini-formula">Si los totales son iguales → más favorables = más probable</div>
+      <h4>Ejemplo</h4>
+      <table>
+        <tr><th>Evento</th><th>Favorables</th><th>Totales</th><th>P</th></tr>
+        <tr><td>Sacar número par</td><td>3 (2,4,6)</td><td>6</td><td>3/6</td></tr>
+        <tr><td>Sacar mayor que 4</td><td>2 (5,6)</td><td>6</td><td>2/6</td></tr>
+      </table>
+      <p>Como 3/6 > 2/6, es <strong>más probable sacar número par</strong>.</p>
+      <h4>Reglas rápidas</h4>
+      <ul>
+        <li><strong>Más favorables = más probable</strong> (si el total es el mismo)</li>
+        <li><strong>Menos favorables = menos probable</strong></li>
+        <li><strong>Mismos favorables = igual de probable</strong></li>
+      </ul>
+      <div class="highlight-box"><strong>Ejemplo de igual probabilidad:</strong> P(par) = 3/6 y P(impar) = 3/6 → son igual de probables porque tienen los mismos casos favorables.</div>
+    </div>
+
+    <div style="margin-top:16px;text-align:center;padding:12px;background:var(--sakura-light);border:2px solid var(--sakura-dark)">
+      <div style="font-size:13px;font-weight:800;color:var(--sakura-dark)">🌸 ¡Lista para el desafío?</div>
+      <button class="go-btn sakura" style="margin-top:8px" onclick="goTab(2)">Ir a la Misión 1 → 🎲</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== SCREEN 2: MISIÓN 1 ===== -->
+<div class="screen" id="s2">
+<div class="manga-panel" id="les2">
+  <div class="section-header"><div class="s-icon">🎲</div><div><h2>Misión 1 — Experimentos</h2><div class="s-sub">DETERMINÍSTICO VS ALEATORIO</div></div></div>
+  <div class="section-body">
+    <div class="bubble-wrap">
+      <div class="bubble"><div><div class="b-name">Kitsune 🦊</div><div class="b-text">¡Ninja, escucha bien! Para dominar la probabilidad, primero debes entender qué tipo de experimento tienes. ¿Hay sorpresa o ya sabes lo que pasará?</div></div></div>
+    </div>
+    <div class="content-box" style="margin-top:18px"><span class="cb-tag">concepto clave</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+        <div style="background:#f5f9fc;border:2px solid #90a4ae;padding:12px">
+          <div style="font-size:13px;font-weight:800;color:#37474f;margin-bottom:6px">DETERMINÍSTICO</div>
+          <div style="font-size:12px;line-height:1.6;color:#546e7a">Siempre pasa lo mismo. Ya sabes el resultado antes de hacerlo. Sin sorpresa.</div>
+        </div>
+        <div style="background:var(--sakura-light);border:2px solid var(--sakura-dark);padding:12px">
+          <div style="font-size:13px;font-weight:800;color:var(--sakura-dark);margin-bottom:6px">ALEATORIO</div>
+          <div style="font-size:12px;line-height:1.6;color:var(--ink)">Pueden pasar varias cosas. No sabes cuál saldrá. ¡Hay sorpresa!</div>
+        </div>
+      </div>
+    </div>
+    <div class="ex-grid">
+      <div class="ex-card det"><div class="ec-icon">💡</div><div class="ec-label">Encender la luz</div><div class="ec-type">Determinístico</div></div>
+      <div class="ex-card ale"><div class="ec-icon">🪙</div><div class="ec-label">Lanzar moneda</div><div class="ec-type">Aleatorio</div></div>
+      <div class="ex-card det"><div class="ec-icon">➕</div><div class="ec-label">Sumar 2 + 2</div><div class="ec-type">Determinístico</div></div>
+      <div class="ex-card ale"><div class="ec-icon">🎲</div><div class="ec-label">Tirar un dado</div><div class="ec-type">Aleatorio</div></div>
+    </div>
+    <div class="demo-panel">
+      <div class="d-tag">⚡ demo ninja: lanza el dado</div>
+      <p>Haz clic para ver que cada lanzamiento puede dar un resultado distinto:</p>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div id="diceEmoji" style="font-size:52px;cursor:pointer;line-height:1" onclick="rollDice()">🎲</div>
+        <div>
+          <div style="font-size:12px;color:var(--muted)">Resultado:</div>
+          <div id="diceOut" style="font-size:24px;font-weight:900;color:var(--indigo)">— haz clic</div>
+          <div id="diceCount" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+        </div>
+      </div>
+      <div id="diceHint" style="display:none;margin-top:8px;background:var(--gold-light);border-left:4px solid var(--gold-dark);padding:8px 10px;font-size:12px;color:var(--gold-dark);font-weight:700">
+        ¡Ves cómo cambia el resultado? Eso es lo que hace a un experimento ALEATORIO.
+      </div>
+    </div>
+    <div class="content-box gold" style="margin-top:18px"><span class="cb-tag">truco ninja</span>
+      <p style="margin-top:4px">Pregúntate: <em>«¿Ya sé exactamente qué va a pasar antes de hacerlo?»</em></p>
+      <p style="margin-top:6px"><strong>SÍ →</strong> Determinístico &nbsp;&nbsp; <strong>NO →</strong> Aleatorio</p>
+    </div>
+    <button class="go-btn red" onclick="startQ(2)">¡Listo! Ir al desafío 🥷</button>
+  </div>
+</div>
+<div id="qz2" style="display:none" class="manga-panel"></div>
+</div>
+
+<!-- ===== SCREEN 3: MISIÓN 2 ===== -->
+<div class="screen" id="s3">
+<div class="manga-panel" id="les3">
+  <div class="section-header"><div class="s-icon">🌀</div><div><h2>Misión 2 — Espacio muestral</h2><div class="s-sub">TODOS LOS RESULTADOS POSIBLES</div></div></div>
+  <div class="section-body">
+    <div class="bubble-wrap">
+      <div class="bubble"><div><div class="b-name">Kitsune 🦊</div><div class="b-text">¡Gran trabajo! Ahora aprenderás el concepto más importante: el <strong>espacio muestral</strong>. Sin esto, no puedes calcular ninguna probabilidad.</div></div></div>
+    </div>
+    <div class="content-box" style="margin-top:18px"><span class="cb-tag">definición</span>
+      <p style="margin-top:4px">El <strong>espacio muestral</strong> es la lista de <strong>todos los resultados posibles</strong> de un experimento. Es todo lo que podría pasar antes de hacerlo.</p>
+    </div>
+    <div class="demo-panel">
+      <div class="d-tag">🌀 explora espacios muestrales</div>
+      <p>Haz clic en cada experimento para ver su espacio muestral:</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="go-btn indigo" style="padding:8px 12px;font-size:12px;margin:0;width:auto" onclick="showSM(0)">🪙 Moneda</button>
+        <button class="go-btn indigo" style="padding:8px 12px;font-size:12px;margin:0;width:auto" onclick="showSM(1)">🎲 Dado</button>
+        <button class="go-btn indigo" style="padding:8px 12px;font-size:12px;margin:0;width:auto" onclick="showSM(2)">🔮 Bolitas</button>
+      </div>
+      <div id="smBox" style="display:none">
+        <div class="sm-wrap">
+          <div class="sm-label" id="smLabel"></div>
+          <div class="sm-items" id="smItems"></div>
+          <div id="smDesc" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="content-box sakura" style="margin-top:18px"><span class="cb-tag">tipos de sucesos</span>
+      <div style="margin-top:4px">
+        <p><strong>Suceso seguro (P = 1):</strong> siempre ocurre. Ej: sacar del 1 al 6 en un dado.</p>
+        <p style="margin-top:6px"><strong>Suceso posible (0 &lt; P &lt; 1):</strong> puede ocurrir. Ej: sacar número par.</p>
+        <p style="margin-top:6px"><strong>Suceso imposible (P = 0):</strong> nunca ocurre. Ej: sacar 7 en un dado.</p>
+      </div>
+      <div class="prob-scale" style="margin-top:10px">
+        <div class="ps-seg p0">🔴<br>Imposible<br>P = 0</div>
+        <div class="ps-seg p1">🟡<br>Posible<br>0 &lt; P &lt; 1</div>
+        <div class="ps-seg p2">🟢<br>Seguro<br>P = 1</div>
+      </div>
+    </div>
+    <button class="go-btn red" onclick="startQ(3)">¡Listo! Ir al desafío 🥷</button>
+  </div>
+</div>
+<div id="qz3" style="display:none" class="manga-panel"></div>
+</div>
+
+<!-- ===== SCREEN 4: MISIÓN 3 ===== -->
+<div class="screen" id="s4">
+<div class="manga-panel" id="les4">
+  <div class="section-header"><div class="s-icon">🌳</div><div><h2>Misión 3 — Árbol y tabla</h2><div class="s-sub">ORGANIZAR COMBINACIONES</div></div></div>
+  <div class="section-body">
+    <div class="bubble-wrap">
+      <div class="bubble"><div><div class="b-name">Kitsune 🦊</div><div class="b-text">Cuando el experimento tiene <strong>más de un paso</strong>, necesitas una herramienta para no perder ninguna combinación. Tienes dos opciones: árbol o tabla.</div></div></div>
+    </div>
+    <div class="content-box teal" style="margin-top:18px"><span class="cb-tag">truco de multiplicación</span>
+      <div class="formula-box" style="margin-top:8px">Total = A × B</div>
+      <p style="font-size:12px">Moneda (2) × Dado (6) = <strong>12 resultados</strong><br>Dado (6) × Dado (6) = <strong>36 resultados</strong><br>2 monedas: 2 × 2 = <strong>4 resultados</strong></p>
+    </div>
+    <div class="demo-panel">
+      <div class="d-tag">🌳 árbol interactivo: moneda + dado</div>
+      <p>Haz clic para ver las ramas:</p>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="go-btn indigo" style="padding:8px 12px;font-size:12px;margin:0;width:auto" onclick="showTree('cara')">🪙 Cara</button>
+        <button class="go-btn indigo" style="padding:8px 12px;font-size:12px;margin:0;width:auto" onclick="showTree('sello')">🪙 Sello</button>
+        <button class="go-btn sakura" style="padding:8px 12px;font-size:12px;margin:0;width:auto" onclick="showTree('all')">Ver todo (12)</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="tree-tbl" id="treeT">
+          <tr class="hdr"><td>Moneda</td><td>Dado</td><td>Combinación</td></tr>
+        </table>
+      </div>
+      <div id="treeInfo" style="font-size:12px;color:var(--teal);font-weight:700;margin-top:6px;display:none"></div>
+    </div>
+    <div class="content-box" style="margin-top:12px"><span class="cb-tag">tabla de doble entrada</span>
+      <p style="margin-top:4px;font-size:12px">Para dos dados: 6 filas × 6 columnas = <strong>36 combinaciones</strong></p>
+      <div style="overflow-x:auto;margin-top:8px">
+        <table class="tree-tbl" style="min-width:260px;font-size:11px">
+          <tr class="hdr"><td>D1\D2</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+          <tr><td style="background:var(--indigo);color:white;font-weight:800">1</td><td>1-1</td><td>1-2</td><td>1-3</td><td>1-4</td><td>1-5</td><td>1-6</td></tr>
+          <tr><td style="background:var(--indigo);color:white;font-weight:800">2</td><td>2-1</td><td>2-2</td><td>2-3</td><td>2-4</td><td>2-5</td><td>2-6</td></tr>
+          <tr><td colspan="7" style="font-size:11px;color:var(--muted);padding:5px">... hasta 6-6 = 36 totales</td></tr>
+        </table>
+      </div>
+    </div>
+    <button class="go-btn red" onclick="startQ(4)">¡Listo! Ir al desafío 🥷</button>
+  </div>
+</div>
+<div id="qz4" style="display:none" class="manga-panel"></div>
+</div>
+
+<!-- ===== SCREEN 5: MISIÓN 4 ===== -->
+<div class="screen" id="s5">
+<div class="manga-panel" id="les5">
+  <div class="section-header"><div class="s-icon">⚖️</div><div><h2>Misión 4 — Probabilidad</h2><div class="s-sub">LA FÓRMULA NINJA</div></div></div>
+  <div class="section-body">
+    <div class="bubble-wrap">
+      <div class="bubble"><div><div class="b-name">Kitsune 🦊</div><div class="b-text">¡Ya casi eres maestra! Ahora viene el jutsu central: calcular la probabilidad. Solo tienes que contar y dividir.</div></div></div>
+    </div>
+    <div class="content-box" style="margin-top:18px"><span class="cb-tag">la fórmula</span>
+      <div class="formula-box" style="margin-top:8px">P = casos favorables ÷ casos totales</div>
+      <p style="font-size:12px;margin-top:6px"><strong>Casos favorables:</strong> los que me interesan (los que pide el ejercicio)<br><strong>Casos totales:</strong> TODOS los resultados posibles</p>
+    </div>
+    <div class="content-box gold" style="margin-top:16px"><span class="cb-tag">pasos ninja</span>
+      <ul style="margin-top:6px">
+        <li><strong>1.</strong> Escribe el espacio muestral (todos los posibles)</li>
+        <li><strong>2.</strong> Marca los que cumplen lo pedido</li>
+        <li><strong>3.</strong> Cuenta los favorables</li>
+        <li><strong>4.</strong> Divide: favorables ÷ totales</li>
+      </ul>
+    </div>
+    <div class="demo-panel">
+      <div class="d-tag">⚡ calculadora de bolitas</div>
+      <p>Ajusta las bolitas y haz clic en un color para calcular:</p>
+      <div class="slider-row"><label>🔴 Rojas</label><input type="range" min="0" max="8" value="3" id="slR" step="1" oninput="updBolitas()"><span id="oR">3</span></div>
+      <div class="slider-row"><label>🔵 Azules</label><input type="range" min="0" max="8" value="2" id="slA" step="1" oninput="updBolitas()"><span id="oA">2</span></div>
+      <div class="slider-row"><label>🟢 Verdes</label><input type="range" min="0" max="8" value="5" id="slV" step="1" oninput="updBolitas()"><span id="oV">5</span></div>
+      <div class="bolita-grid" id="bGrid"></div>
+      <div id="probTxt" style="font-size:13px;color:var(--muted);margin-top:4px">Haz clic en una bolita para ver su probabilidad</div>
+      <div id="probBarWrap" style="display:none;margin-top:6px">
+        <div class="prob-bar"><div class="prob-fill" id="pFill"><span id="pPct"></span></div></div>
+        <div id="pFrac" style="font-size:17px;font-weight:900;color:var(--indigo);margin-top:4px"></div>
+      </div>
+    </div>
+    <button class="go-btn red" onclick="startQ(5)">¡Listo! Ir al desafío 🥷</button>
+  </div>
+</div>
+<div id="qz5" style="display:none" class="manga-panel"></div>
+</div>
+
+<!-- ===== SCREEN 6: MISIÓN FINAL ===== -->
+<div class="screen" id="s6">
+<div class="manga-panel" id="les6">
+  <div class="section-header" style="background:var(--green)"><div class="s-icon">🏆</div><div><h2>Misión Final — Comparar</h2><div class="s-sub">¿CUÁL ES MÁS PROBABLE?</div></div></div>
+  <div class="section-body">
+    <div class="bubble-wrap">
+      <div class="bubble"><div><div class="b-name">Kitsune 🦊</div><div class="b-text">¡Última misión, ninja! A veces debes comparar la probabilidad de dos eventos y decidir cuál tiene más chances. ¡Tú puedes!</div></div></div>
+    </div>
+    <div class="content-box" style="margin-top:18px"><span class="cb-tag">cómo comparar</span>
+      <div class="formula-box" style="margin-top:8px">Más favorables (mismo total) = más probable</div>
+      <p style="font-size:12px;margin-top:6px">Calcula P de cada evento y compara. Si los totales son iguales, solo mira los favorables.</p>
+    </div>
+    <div class="demo-panel">
+      <div class="d-tag">🏆 arena de comparación — dado de 6</div>
+      <div class="compare-grid">
+        <div>
+          <div style="font-size:12px;font-weight:800;color:var(--indigo);margin-bottom:5px">Evento A</div>
+          <select id="evA" onchange="doCmp()" style="width:100%;padding:7px;border:2px solid var(--ink);font-size:12px;font-family:'Nunito',sans-serif;background:white">
+            <option value="par">Número par (2,4,6)</option>
+            <option value="impar">Número impar (1,3,5)</option>
+            <option value="mayor4">Mayor que 4 (5,6)</option>
+            <option value="menor3">Menor que 3 (1,2)</option>
+            <option value="uno">Exactamente 1</option>
+            <option value="seguro">Del 1 al 6</option>
+          </select>
+          <div class="sm-wrap" style="margin-top:6px;padding:8px 10px">
+            <div class="sm-label">Favorables evento A</div>
+            <div class="sm-items" id="favA"></div>
+            <div id="frA" style="font-size:15px;font-weight:900;color:var(--indigo);margin-top:5px"></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:800;color:var(--indigo);margin-bottom:5px">Evento B</div>
+          <select id="evB" onchange="doCmp()" style="width:100%;padding:7px;border:2px solid var(--ink);font-size:12px;font-family:'Nunito',sans-serif;background:white">
+            <option value="impar">Número impar (1,3,5)</option>
+            <option value="par">Número par (2,4,6)</option>
+            <option value="mayor4">Mayor que 4 (5,6)</option>
+            <option value="menor3">Menor que 3 (1,2)</option>
+            <option value="uno">Exactamente 1</option>
+            <option value="seguro">Del 1 al 6</option>
+          </select>
+          <div class="sm-wrap" style="margin-top:6px;padding:8px 10px">
+            <div class="sm-label">Favorables evento B</div>
+            <div class="sm-items" id="favB"></div>
+            <div id="frB" style="font-size:15px;font-weight:900;color:var(--indigo);margin-top:5px"></div>
+          </div>
+        </div>
+      </div>
+      <div id="cmpRes" class="compare-result" style="display:none"></div>
+    </div>
+    <button class="go-btn green" onclick="startQ(6)">¡Desafío final! 🏆</button>
+  </div>
+</div>
+<div id="qz6" style="display:none" class="manga-panel"></div>
+</div>
+
+</div>
+
+<script>
+var totalS=0, done=[false,false,false,false,false], dRolls=0;
+
+var smData=[
+  {label:'🪙 Moneda',items:['cara','sello'],desc:'2 resultados posibles en total'},
+  {label:'🎲 Dado de 6 caras',items:['1','2','3','4','5','6'],desc:'6 resultados posibles en total'},
+  {label:'🔮 Bolsa de bolitas',items:['🔴 roja','🔵 azul','🟢 verde'],desc:'3 colores posibles en total'}
+];
+
+var evData={par:[2,4,6],impar:[1,3,5],mayor4:[5,6],menor3:[1,2],uno:[1],seguro:[1,2,3,4,5,6]};
+
+var quizzes={
+  2:[
+    {q:'¿Qué tipo de experimento es tirar un dado?',ctx:'Piensa: ¿sabes exactamente qué número saldrá antes de tirarlo?',opts:['Determinístico','Aleatorio','Seguro','Imposible'],ans:1,fb:'¡Correcto! Tirar un dado es aleatorio porque no sabes qué número saldrá.'},
+    {q:'¿Cuál de estos es un experimento determinístico?',ctx:'Recuerda: en un experimento determinístico siempre pasa lo mismo.',opts:['Sacar una carta','Lanzar una moneda','Calcular 5 × 3','Sacar una bolita'],ans:2,fb:'¡Exacto! Calcular 5 × 3 siempre da 15, sin importar cuántas veces lo hagas.'},
+    {q:'¿Cuál es un experimento ALEATORIO?',ctx:'El resultado debe ser incierto — debe haber sorpresa.',opts:['Hervir agua','Sacar una bolita de una bolsa','Sumar 0 + 0','Multiplicar por 1'],ans:1,fb:'¡Bravo! Sacar una bolita es aleatorio porque no sabes qué color saldrá.'}
+  ],
+  3:[
+    {q:'¿Cuál es el espacio muestral al lanzar una moneda?',ctx:'El espacio muestral incluye TODOS los resultados posibles.',opts:['{cara}','{sello}','{cara, sello}','{cara, sello, canto}'],ans:2,fb:'¡Correcto! Una moneda tiene solo 2 resultados posibles: cara y sello.'},
+    {q:'Al tirar un dado, sacar el número 7 es un suceso...',ctx:'Un dado común tiene solo los números 1 al 6.',opts:['Posible','Seguro','Imposible','Aleatorio'],ans:2,fb:'¡Perfecto! El 7 no existe en un dado de 6 caras → es imposible. P = 0.'},
+    {q:'Al tirar un dado, sacar un número del 1 al 6 es...',ctx:'Piensa: ¿puede el dado mostrar algo que NO sea del 1 al 6?',opts:['Imposible','Posible','Seguro','Aleatorio'],ans:2,fb:'¡Exacto! El dado SIEMPRE muestra 1, 2, 3, 4, 5 o 6 → es un suceso seguro. P = 1.'}
+  ],
+  4:[
+    {q:'Lanzas una moneda y luego un dado. ¿Cuántos resultados posibles hay?',ctx:'Usa el truco: opciones de moneda × opciones de dado.',opts:['6','8','12','16'],ans:2,fb:'¡Correcto! 2 (moneda) × 6 (dado) = 12 resultados posibles.'},
+    {q:'Lanzas DOS monedas. ¿Cuántos resultados posibles hay?',ctx:'Cada moneda tiene 2 opciones: cara o sello.',opts:['2','3','4','8'],ans:2,fb:'¡Bravo! 2 × 2 = 4 resultados: cara-cara, cara-sello, sello-cara, sello-sello.'},
+    {q:'Dos dados. ¿Cuántas combinaciones totales hay?',ctx:'Cada dado tiene 6 caras. Usa la tabla de doble entrada: 6 filas × 6 columnas.',opts:['12','24','36','48'],ans:2,fb:'¡Perfecto! 6 × 6 = 36 combinaciones totales. La tabla tiene 6 filas y 6 columnas.'}
+  ],
+  5:[
+    {q:'En un dado de 6 caras, ¿cuál es la probabilidad de sacar el número 3?',ctx:'Casos favorables: solo el 3. Casos totales: todos los números del dado.',opts:['1/3','1/6','3/6','6/1'],ans:1,fb:'¡Correcto! Solo 1 favorable (el 3) entre 6 totales → P = 1/6.'},
+    {q:'¿Cuál es la probabilidad de sacar número par en un dado?',ctx:'Los números pares en un dado de 6 son: 2, 4 y 6.',opts:['1/6','2/6','3/6','4/6'],ans:2,fb:'¡Perfecto! 3 favorables (2, 4, 6) de 6 totales → P = 3/6 = 1/2.'},
+    {q:'Bolsa con 10 bolitas: 4 rojas y 6 blancas. ¿P de sacar una roja?',ctx:'Favorables = bolitas rojas. Totales = todas las bolitas.',opts:['6/10','1/4','4/10','1/10'],ans:2,fb:'¡Genial! 4 rojas de 10 totales → P = 4/10 = 2/5.'}
+  ],
+  6:[
+    {q:'En un dado, ¿qué es más probable: sacar número par o sacar exactamente el 5?',ctx:'Par: {2,4,6} → 3 favorables. Exactamente 5: {5} → 1 favorable.',opts:['Exactamente el 5','Son iguales','Número par','Depende del dado'],ans:2,fb:'¡Correcto! P(par)=3/6 y P(5)=1/6. Como 3 > 1, sacar par es más probable.'},
+    {q:'¿Cuáles son IGUAL DE PROBABLES en un dado de 6 caras?',ctx:'Calcula la probabilidad de cada par de opciones.',opts:['Par vs mayor que 4','Par vs impar','Sacar 1 vs sacar par','Menor que 3 vs mayor que 4'],ans:1,fb:'¡Exacto! P(par)=3/6 y P(impar)=3/6 — mismos favorables → igual de probable.'},
+    {q:'P(mayor que 4) = 2/6 y P(número par) = 3/6. ¿Cuál tiene MAYOR probabilidad?',ctx:'Compara las fracciones. El total es el mismo: 6.',opts:['Mayor que 4','Son iguales','Número par','No se puede comparar'],ans:2,fb:'¡Maestra ninja! 3/6 > 2/6, por lo tanto P(par) > P(mayor que 4).'}
+  ]
+};
+
+function goTab(n){
+  document.querySelectorAll('.screen').forEach(function(s,i){s.classList.toggle('active',i===n)});
+  document.querySelectorAll('.chapter-tab').forEach(function(t,i){t.classList.toggle('active',i===n)});
+}
+
+function startM(n){
+  var idx=n-2;
+  if(idx>0 && !done[idx-1])return;
+  goTab(n);
+}
+
+function toggleAcc(id){
+  var c=document.getElementById(id);
+  var a=document.getElementById('arr-'+id);
+  c.classList.toggle('open');
+  a.textContent=c.classList.contains('open')?'▲':'▼';
+}
+
+function rollDice(){
+  var f=['⚀','⚁','⚂','⚃','⚄','⚅'];
+  var r=Math.floor(Math.random()*6);
+  document.getElementById('diceEmoji').textContent=f[r];
+  document.getElementById('diceOut').textContent=(r+1);
+  dRolls++;
+  document.getElementById('diceCount').textContent='Has lanzado '+dRolls+' vez'+(dRolls===1?'':'es');
+  if(dRolls>=3)document.getElementById('diceHint').style.display='block';
+}
+
+function showSM(i){
+  var d=smData[i];
+  document.getElementById('smBox').style.display='block';
+  document.getElementById('smLabel').textContent=d.label;
+  document.getElementById('smDesc').textContent=d.desc;
+  var c=document.getElementById('smItems');c.innerHTML='';
+  d.items.forEach(function(it){c.innerHTML+='<span class="sm-item">'+it+'</span>';});
+}
+
+function showTree(w){
+  var rows=[['cara',1],['cara',2],['cara',3],['cara',4],['cara',5],['cara',6],
+            ['sello',1],['sello',2],['sello',3],['sello',4],['sello',5],['sello',6]];
+  var t=document.getElementById('treeT');
+  t.innerHTML='<tr class="hdr"><td>Moneda</td><td>Dado</td><td>Combinación</td></tr>';
+  var n=0;
+  rows.forEach(function(r){
+    if(w==='all'||r[0]===w){
+      t.innerHTML+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[0]+'-'+r[1]+'</td></tr>';
+      n++;
+    }
+  });
+  var inf=document.getElementById('treeInfo');inf.style.display='block';
+  inf.textContent=n+' combinación'+(n===1?'':'es')+(w==='all'?' en total (2 × 6 = 12)':'');
+}
+
+var bCols={roja:'#c62828',azul:'#1565c0',verde:'#2e7d32'};
+var bEmoji={roja:'R',azul:'A',verde:'V'};
+
+function updBolitas(){
+  var r=+document.getElementById('slR').value,a=+document.getElementById('slA').value,v=+document.getElementById('slV').value;
+  document.getElementById('oR').textContent=r;
+  document.getElementById('oA').textContent=a;
+  document.getElementById('oV').textContent=v;
+  var g=document.getElementById('bGrid');g.innerHTML='';
+  function make(n,col,lbl){for(var i=0;i<n;i++)g.innerHTML+='<div class="bolita" style="background:'+bCols[col]+'" onclick="showProb(\''+col+'\')">'+lbl+'</div>';}
+  make(r,'roja','R');make(a,'azul','A');make(v,'verde','V');
+  var tot=r+a+v;
+  document.getElementById('probTxt').textContent='Total: '+tot+' bolitas. Haz clic en un color.';
+  document.getElementById('probBarWrap').style.display='none';
+}
+
+function showProb(col){
+  var r=+document.getElementById('slR').value,a=+document.getElementById('slA').value,v=+document.getElementById('slV').value;
+  var tot=r+a+v;if(!tot)return;
+  var fav=col==='roja'?r:col==='azul'?a:v;
+  var pct=Math.round(fav/tot*100);
+  var names={roja:'rojas 🔴',azul:'azules 🔵',verde:'verdes 🟢'};
+  document.getElementById('probTxt').textContent='Probabilidad de sacar '+names[col]+':';
+  document.getElementById('probBarWrap').style.display='block';
+  document.getElementById('pFill').style.width=pct+'%';
+  document.getElementById('pPct').textContent=pct+'%';
+  document.getElementById('pFrac').textContent='P = '+fav+' / '+tot;
+}
+
+function doCmp(){
+  var a=document.getElementById('evA').value,b=document.getElementById('evB').value;
+  var da=evData[a],db=evData[b];
+  var fA=document.getElementById('favA'),fB=document.getElementById('favB');
+  fA.innerHTML='';fB.innerHTML='';
+  da.forEach(function(n){fA.innerHTML+='<span class="sm-item fav">'+n+'</span>';});
+  db.forEach(function(n){fB.innerHTML+='<span class="sm-item fav">'+n+'</span>';});
+  document.getElementById('frA').textContent='P = '+da.length+'/6';
+  document.getElementById('frB').textContent='P = '+db.length+'/6';
+  var res=document.getElementById('cmpRes');res.style.display='block';
+  res.className='compare-result '+(da.length>db.length?'a-wins':db.length>da.length?'b-wins':'tie');
+  if(da.length>db.length)res.textContent='✨ Evento A es más probable ('+da.length+'/6 > '+db.length+'/6)';
+  else if(db.length>da.length)res.textContent='✨ Evento B es más probable ('+db.length+'/6 > '+da.length+'/6)';
+  else res.textContent='⚖️ Son igual de probables ('+da.length+'/6 = '+db.length+'/6)';
+}
+
+var qState={};
+
+function startQ(screen){
+  var les=document.getElementById('les'+screen);
+  if(les)les.style.display='none';
+  var qd=document.getElementById('qz'+screen);
+  qd.style.display='block';
+  qState[screen]={q:0,correct:0};
+  renderQ(screen);
+}
+
+function renderQ(sc){
+  var st=qState[sc];
+  var qs=quizzes[sc];
+  if(st.q>=qs.length){showRes(sc);return;}
+  var q=qs[st.q];
+  var opts=q.opts.map(function(o,i){return '<button class="opt" onclick="checkA('+sc+','+i+')">'+o+'</button>';}).join('');
+  document.getElementById('qz'+sc).innerHTML='<div class="quiz-header"><h3>🥷 Desafío Misión '+(sc-1)+'</h3><span style="font-size:12px;opacity:0.85">Pregunta '+(st.q+1)+' / '+qs.length+'</span></div><div class="quiz-body"><div class="quiz-q">'+q.q+'</div><div class="quiz-ctx">'+q.ctx+'</div><div class="opts">'+opts+'</div><div class="feedback" id="fb'+sc+'"></div><button class="next-btn" id="nb'+sc+'" onclick="nextQ('+sc+')">Siguiente →</button></div>';
+}
+
+function checkA(sc,ch){
+  var st=qState[sc];
+  var q=quizzes[sc][st.q];
+  var opts=document.querySelectorAll('#qz'+sc+' .opt');
+  opts.forEach(function(o){o.disabled=true;});
+  var ok=ch===q.ans;
+  if(ok){opts[ch].classList.add('correct');st.correct++;}
+  else{opts[ch].classList.add('wrong');opts[q.ans].classList.add('correct');}
+  var fb=document.getElementById('fb'+sc);
+  fb.className='feedback show '+(ok?'ok':'nok');
+  fb.innerHTML='<div class="fb-ico">'+(ok?'⭐':'💪')+'</div><div class="fb-txt"><strong>'+(ok?'¡Correcto, ninja!':'¡Casi! Inténtalo la próxima vez.')+'</strong>'+q.fb+'</div>';
+  var nb=document.getElementById('nb'+sc);nb.className='next-btn show';
+  if(st.q+1>=quizzes[sc].length)nb.textContent='Ver resultados 🏆';
+}
+
+function nextQ(sc){qState[sc].q++;renderQ(sc);}
+
+function showRes(sc){
+  var st=qState[sc];
+  var tot=quizzes[sc].length;
+  var cor=st.correct;
+  var stars=cor===tot?3:cor>=2?2:1;
+  totalS+=stars;
+  done[sc-2]=true;
+  updateStars();
+  unlockNext(sc);
+  var icons=['🌱','🌸','🔥'];
+  var msgs=['¡Sigue practicando! Repasa la lección e inténtalo de nuevo.','¡Bien hecho! Ya casi dominas este jutsu.','¡Perfecto! Eres una ninja de este tema. 🌟'];
+  var sHtml='';for(var i=0;i<3;i++)sHtml+='<span style="opacity:'+(i<stars?1:0.25)+'">⭐</span>';
+  var nextBtn=sc<6?'<button class="go-btn indigo" onclick="goTab('+(sc+1)+')">Siguiente misión →</button>':'<button class="go-btn green" onclick="showFinal()">¡Ver diploma! 🏆</button>';
+  document.getElementById('qz'+sc).innerHTML='<div class="result-panel"><span class="r-icon">'+icons[stars-1]+'</span><h2>Misión '+(sc-1)+' completada</h2><div class="r-stars">'+sHtml+'</div><div class="r-score">'+cor+' / '+tot+'</div><div class="r-msg">'+msgs[stars-1]+'</div><div class="result-btns"><button class="btn-s" onclick="var l=document.getElementById(\'les'+sc+'\');l.style.display=\'block\';document.getElementById(\'qz'+sc+'\').style.display=\'none\'">Repasar lección</button><button class="btn-s" onclick="goTab(1)">Ver materia 📖</button></div>'+nextBtn+'</div>';
+}
+
+function updateStars(){
+  var filled=Math.min(totalS,15);
+  var h='';for(var i=0;i<15;i++)h+=i<filled?'⭐':'☆';
+  document.getElementById('starDisplay').textContent=h.substring(0,15);
+  document.getElementById('starCount').textContent=totalS+' / 15 ⭐';
+}
+
+function unlockNext(sc){
+  if(sc<6){
+    var mr=document.getElementById('mr'+(sc-1));
+    if(mr){mr.classList.remove('locked');mr.onclick=function(){startM(sc+1);};}
+    var ms=document.getElementById('ms'+(sc-1));
+    if(ms)ms.textContent='▶';
+  }
+  var msDone=document.getElementById('ms'+(sc-2));
+  if(msDone)msDone.textContent='✅';
+  var mr=document.getElementById('mr'+(sc-2));
+  if(mr)mr.classList.add('done');
+  if(sc===6){document.getElementById('finalMsg').style.display='block';}
+}
+
+function showFinal(){goTab(0);document.getElementById('finalMsg').style.display='block';}
+
+updBolitas();doCmp();
+</script>
